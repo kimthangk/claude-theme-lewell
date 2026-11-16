@@ -1,9 +1,14 @@
 {
   "name": "lewell-theme",
-  "version": "0.6.3",
+  "displayName": "LeWell Theme",
+  "version": "0.6.4",
   "description": "Animated pixel-art backdrops for the Claude desktop app: a cute companion walks a Christmas village or a city tour while Claude works, and stands when Claude needs you.",
-  "author": { "name": "LeWell", "url": "https://lewell.app" },
+  "author": {
+    "name": "LeWell",
+    "url": "https://lewell.app"
+  },
   "homepage": "https://github.com/kimthangk/claude-theme-lewell",
   "license": "MIT",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "icon": "./.claude-plugin/icon.png"
 }
