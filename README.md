@@ -30,17 +30,17 @@ walk carries on from where he stopped.
 At the prompt of a Claude Code terminal session:
 
 ```
-/plugin install lewell-theme --marketplace kimthangk/lewell-claude-theme
+/plugin install lewell-theme --marketplace kimthangk/claude-theme-lewell
 ```
 
 From a shell:
 
 ```bash
-claude plugin install lewell-theme --marketplace kimthangk/lewell-claude-theme
+claude plugin install lewell-theme --marketplace kimthangk/claude-theme-lewell
 ```
 
 In the desktop app, where `/plugin` does not run: click **+** next to the prompt box,
-then **Plugins**, **Add marketplace** with `kimthangk/lewell-claude-theme`, then
+then **Plugins**, **Add marketplace** with `kimthangk/claude-theme-lewell`, then
 **Add plugin**.
 
 Answer `y` to add the marketplace and pick the user scope, so every session gets it.

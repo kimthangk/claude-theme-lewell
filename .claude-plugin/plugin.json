@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "Animated pixel-art backdrops for the Claude desktop app: Lewy walks a city tour or a Christmas village while Claude works, and stands when Claude needs you.",
   "author": { "name": "LeWell", "url": "https://lewell.app" },
-  "homepage": "https://github.com/kimthangk/lewell-claude-theme",
+  "homepage": "https://github.com/kimthangk/claude-theme-lewell",
   "license": "MIT",
   "types": "./types/index.d.ts"
 }
