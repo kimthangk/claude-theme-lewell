@@ -20,9 +20,11 @@ export function walkStripCss(n: number, gw: number, id: string): string {
  *  each shown for its slice of the stride by a stepped visibility animation. */
 export function walkPoses(poses: string[], strideS: number): string {
   const n = poses.length
-  return poses.map((p, i) => `<g class="pose" style="animation-delay:-${(Math.round(((n - i) % n) * (strideS / n) * 100) / 100)}s">${p}</g>`).join('')
+  return poses.map((p, i) => `<g class="pose${i === 0 ? ' p0' : ''}" style="animation-delay:-${(Math.round(((n - i) % n) * (strideS / n) * 100) / 100)}s">${p}</g>`).join('')
 }
 
 export function walkPosesCss(n: number, strideS: number): string {
-  return `.pose{visibility:hidden;animation:pose ${strideS}s step-end infinite}@keyframes pose{0%{visibility:visible}${Math.round(1000 / n) / 10}%{visibility:hidden}}`
+  // .p0 stays visible when the app pauses animations (window resize), so Lewy never vanishes;
+  // a running animation overrides it
+  return `.pose{visibility:hidden;animation:pose ${strideS}s step-end infinite}.pose.p0{visibility:visible}@keyframes pose{0%{visibility:visible}${Math.round(1000 / n) / 10}%{visibility:hidden}}`
 }
