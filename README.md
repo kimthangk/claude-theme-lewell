@@ -75,6 +75,17 @@ Type `/scene` alone to list them all. Your pick is remembered for new sessions.
 The pictures show Lewy standing. While Claude works he walks, the street scrolls
 and the landmarks drift slowly behind him.
 
+## What it does on your computer
+
+- **Reads:** only when a turn starts and ends, and whether a tool call is
+  `AskUserQuestion` or `ExitPlanMode` (so Lewy stops while Claude waits for you).
+  It never reads your messages, files or tool results.
+- **Calls:** `$.theme.set` to show the backdrop, `$.clock` to time the city changes,
+  and `$.command.register` to add `/scene`.
+- **Stores:** your chosen scene and how far Lewy has walked, in Claude Code's own
+  plugin storage on your computer.
+- **Sends:** nothing. No network requests, no analytics, no files written.
+
 ## Turn it off
 
 In the desktop app, open **+**, then **Plugins**, and turn off or remove
