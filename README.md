@@ -16,7 +16,7 @@ waiting on you.
 2. Click **Add marketplace** and enter `kimthangk/claude-theme-lewell`.
 3. Find **lewell-theme** in the list and click **Add plugin**.
 
-Then start a new session. You'll see Lewy on a city street. Send any message and he
+Then start a new session. You'll see Lewy in a snowy village. Send any message and he
 starts walking.
 
 <details>
@@ -51,8 +51,8 @@ Type `/scene` alone to list them all. Your pick is remembered for new sessions.
 
 <table>
 <tr>
-<td width="50%"><img src="images/christmas.jpg" alt="Christmas night"><br><b>Christmas night</b>: a snowy village with Christmas lights<br><code>/scene lewell-xmas-night</code></td>
-<td width="50%"><img src="images/city-tour.gif" alt="City tour"><br><b>City tour</b> (default): all seven cities, a new one every 30 seconds of walking<br><code>/scene lewell-city-tour</code></td>
+<td width="50%"><img src="images/christmas.jpg" alt="Christmas night"><br><b>Christmas night</b> (default): a snowy village with Christmas lights<br><code>/scene lewell-xmas-night</code></td>
+<td width="50%"><img src="images/city-tour.gif" alt="City tour"><br><b>City tour</b>: all seven cities, a new one every 30 seconds of walking<br><code>/scene lewell-city-tour</code></td>
 </tr>
 <tr>
 <td><img src="images/bangkok.jpg" alt="Bangkok"><br><b>Bangkok</b>: Wat Arun and the Grand Palace<br><code>/scene lewell-bangkok</code></td>

@@ -50,7 +50,7 @@ const LOOKS: Record<SceneId, Look> = {
 // where he stopped instead of starting over.
 const lewy = atom({ plugin: 'lewell-theme', key: 'lewy' } as const, { isWalking: false, offsetMs: 0, sinceMs: 0 }, { shape: 'lewy-1' })
 let isTurnActive = false
-let currentScene: SceneId = 'lewell-city-tour'
+let currentScene: SceneId = 'lewell-xmas-night'
 let sceneFlip = false
 
 async function redraw($: EngineInterface): Promise<void> {
@@ -105,7 +105,7 @@ export const register: Register = on => {
     // 16 Nov: the tour was renamed from lewell-cities to lewell-city-tour
     if ((await $.store.get('scene')) === 'lewell-cities') await $.store.set('scene', 'lewell-city-tour')
     const saved = await $.store.get('scene')
-    await apply($, isScene(saved) ? saved : 'lewell-city-tour')
+    await apply($, isScene(saved) ? saved : 'lewell-xmas-night')
     return next(e)
   })
 
