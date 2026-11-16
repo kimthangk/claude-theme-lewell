@@ -1,64 +1,99 @@
 # LeWell theme for Claude
 
-Animated pixel-art backdrops for the Claude desktop app. Lewy, the moss buddy from
+Animated pixel-art backdrops for the **Claude desktop app**. Lewy, the moss buddy from
 [LeWell](https://lewell.app), walks while Claude works and stands still (and blinks)
-when Claude is done or needs you. You can tell at a glance whether Claude is busy
-or waiting.
+when Claude is done or needs you. One glance tells you whether Claude is busy or
+waiting on you.
 
 ![Lewy in Tokyo](images/tokyo.jpg)
 
-## Scenes
+> Backdrops only show in the Claude desktop app. In the terminal, VS Code or the
+> mobile app the theme does nothing, so it's safe to leave installed everywhere.
 
-| | |
-| --- | --- |
-| ![Bangkok](images/bangkok.jpg) | ![Paris](images/paris.jpg) |
-| ![London](images/london.jpg) | ![New York](images/newyork.jpg) |
-| ![San Francisco](images/sanfrancisco.jpg) | ![Singapore](images/singapore.jpg) |
-| ![Christmas night](images/christmas.jpg) | |
+## Install in 3 steps
 
-- **`lewell-city-tour`** (default): Lewy walks the evening streets of seven cities,
-  a new city every 30 seconds of walking. The landmarks drift slowly behind the street.
-- **One city**: `lewell-bangkok`, `lewell-tokyo`, `lewell-paris`, `lewell-london`,
-  `lewell-newyork`, `lewell-sanfrancisco`, `lewell-singapore`.
-- **`lewell-xmas-night`**: a snowy village under the moon, with Christmas lights.
+1. In the Claude desktop app, click **+** next to the prompt box, then **Plugins**.
+2. Click **Add marketplace** and enter `kimthangk/claude-theme-lewell`.
+3. Find **lewell-theme** in the list and click **Add plugin**.
 
-Switch with `/scene <name>`. Your pick is remembered across sessions, and Lewy's
-walk carries on from where he stopped.
+Then start a new session. You'll see Lewy on a city street. Send any message and he
+starts walking.
 
-## Install
+<details>
+<summary>Prefer the terminal?</summary>
 
-At the prompt of a Claude Code terminal session:
+At the prompt of a Claude Code session:
 
 ```
 /plugin install lewell-theme --marketplace kimthangk/claude-theme-lewell
 ```
 
-From a shell:
+Or from a shell:
 
 ```bash
 claude plugin install lewell-theme --marketplace kimthangk/claude-theme-lewell
 ```
 
-In the desktop app, where `/plugin` does not run: click **+** next to the prompt box,
-then **Plugins**, **Add marketplace** with `kimthangk/claude-theme-lewell`, then
-**Add plugin**.
+Answer `y` to add the marketplace, then pick the **user** scope so every session
+gets it. The backdrop still only shows in the desktop app.
 
-Answer `y` to add the marketplace and pick the user scope, so every session gets it.
+</details>
 
-## Where it shows
+## Pick a scene
 
-Backdrops are drawn by the **Claude desktop app** only. In the terminal, VS Code or
-the mobile app the theme stays quiet and changes nothing.
+Type `/scene` followed by a scene name in the desktop app, for example:
 
-## How it works
+```
+/scene lewell-tokyo
+```
+
+Type `/scene` alone to list them all. Your pick is remembered for new sessions.
+
+<table>
+<tr>
+<td width="50%"><img src="images/city-tour.gif" alt="City tour"><br><b>City tour</b> (default): all seven cities, a new one every 30 seconds of walking<br><code>/scene lewell-city-tour</code></td>
+<td width="50%"><img src="images/bangkok.jpg" alt="Bangkok"><br><b>Bangkok</b>: Wat Arun and the Grand Palace<br><code>/scene lewell-bangkok</code></td>
+</tr>
+<tr>
+<td><img src="images/tokyo.jpg" alt="Tokyo"><br><b>Tokyo</b>: Tokyo Tower, Fuji and a torii<br><code>/scene lewell-tokyo</code></td>
+<td><img src="images/paris.jpg" alt="Paris"><br><b>Paris</b>: the Eiffel Tower and the Arc de Triomphe<br><code>/scene lewell-paris</code></td>
+</tr>
+<tr>
+<td><img src="images/london.jpg" alt="London"><br><b>London</b>: Big Ben, Parliament and the London Eye<br><code>/scene lewell-london</code></td>
+<td><img src="images/newyork.jpg" alt="New York"><br><b>New York</b>: the Empire State, the Chrysler and Liberty<br><code>/scene lewell-newyork</code></td>
+</tr>
+<tr>
+<td><img src="images/sanfrancisco.jpg" alt="San Francisco"><br><b>San Francisco</b>: the Golden Gate and the Transamerica Pyramid<br><code>/scene lewell-sanfrancisco</code></td>
+<td><img src="images/singapore.jpg" alt="Singapore"><br><b>Singapore</b>: Marina Bay Sands, the Supertrees and the Merlion<br><code>/scene lewell-singapore</code></td>
+</tr>
+<tr>
+<td><img src="images/christmas.jpg" alt="Christmas night"><br><b>Christmas night</b>: a snowy village with Christmas lights<br><code>/scene lewell-xmas-night</code></td>
+<td></td>
+</tr>
+</table>
+
+The pictures show Lewy standing. While Claude works he walks, the street scrolls
+and the landmarks drift slowly behind him.
+
+## Turn it off
+
+In the desktop app, open **+**, then **Plugins**, and turn off or remove
+**lewell-theme**. From a shell:
+
+```bash
+claude plugin disable lewell-theme
+claude plugin uninstall lewell-theme
+```
+
+Your usual backdrop comes back in the next session.
+
+## For builders: how it works
 
 The theme is a Claude Code mod (a plugin with a hooks module). It listens for
 `turn.start`, `turn.complete` and tool calls to know when Claude is working, and
-draws each scene as one code-made SVG. Everything is drawn in code: no image files,
-no network.
+draws each scene as one SVG made in code: no image files, no network.
 
-A few things we learned getting animation to play in the desktop backdrop, in case
-you build your own:
+What we learned getting animation to play in the desktop backdrop:
 
 - Only code-drawn SVG shows. Keep it one flat `<svg>` with the `<style>` first.
 - CSS keyframes play only while the drawing stays light: a few hundred large shapes,
