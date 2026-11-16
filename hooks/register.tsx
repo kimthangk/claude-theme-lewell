@@ -29,20 +29,20 @@ type Look = { look: ThemeSetArgs; draw: (walking: boolean, walkedMs: number) => 
 const cityLook = (id: CityId): Look => ({
   look: { backdrop: { scene: `lewell-${id}`, glass: GLASS } },
   draw: lewellCityScene(id),
-  alt: `Lewy walks an evening street in ${CITY_NAMES[id]} past its landmarks while Claude works, and stands when Claude needs you`,
+  alt: `A little companion walks an evening street in ${CITY_NAMES[id]} past its landmarks while Claude works, and stands when Claude needs you`,
 })
 const LOOKS: Record<SceneId, Look> = {
   ...(Object.fromEntries(CITY_IDS.map(id => [`lewell-${id}`, cityLook(id)])) as Record<`lewell-${CityId}`, Look>),
   'lewell-xmas-night': {
     look: { backdrop: { scene: 'lewell-xmas-night', glass: GLASS } },
     draw: lewellXmasNightScene,
-    alt: 'Lewy walks a moonlit snowy path past Christmas lights and lit cottages while Claude works, and stands when Claude needs you',
+    alt: 'A little companion walks a moonlit snowy path past Christmas lights and lit cottages while Claude works, and stands when Claude needs you',
   },
   'lewell-city-tour': {
     look: { backdrop: { scene: 'lewell-city-tour', glass: GLASS } },
     draw: lewellCitiesScene,
     stepS: CITY_S,
-    alt: 'Lewy walks past Wat Arun, Tokyo Tower, the Eiffel Tower, Big Ben, the Empire State, the Golden Gate and Marina Bay while Claude works, and stands when Claude needs you',
+    alt: 'A little companion walks past Wat Arun, Tokyo Tower, the Eiffel Tower, Big Ben, the Empire State, the Golden Gate and Marina Bay while Claude works, and stands when Claude needs you',
   },
 }
 

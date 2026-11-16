@@ -1,32 +1,24 @@
 # LeWell theme for Claude
 
-Animated pixel-art backdrops for the **Claude desktop app**. Lewy, the moss buddy from
-[LeWell](https://lewell.app), walks while Claude works and stands still (and blinks)
-when Claude is done or needs you. One glance tells you whether Claude is busy or
-waiting on you.
+Animated pixel-art backdrops for the **Claude desktop app**. A cute little companion
+walks while Claude works and stands still (and blinks) when Claude is done or needs
+you. One glance tells you whether Claude is busy or waiting on you.
 
-![Lewy on a snowy Christmas night](images/christmas.jpg)
+![The companion on a snowy Christmas night](images/christmas.jpg)
 
 > Backdrops only show in the Claude desktop app. In the terminal, VS Code or the
 > mobile app the theme does nothing, so it's safe to leave installed everywhere.
 
-## Install in 3 steps
+## Install
 
-1. In the Claude desktop app, click **+** next to the prompt box, then **Plugins**.
-2. Click **Add marketplace** and enter `kimthangk/claude-theme-lewell`.
-3. Find **lewell-theme** in the list and click **Add plugin**.
-
-Then start a new session. You'll see Lewy in a snowy village. Send any message and he
-starts walking.
-
-<details>
-<summary>Prefer the terminal?</summary>
-
-At the prompt of a Claude Code session:
+Type this at the prompt of a Claude Code session:
 
 ```
 /plugin install lewell-theme --marketplace kimthangk/claude-theme-lewell
 ```
+
+Answer `y` to add the marketplace, then pick the **user** scope so every session
+gets it.
 
 Or from a shell:
 
@@ -34,14 +26,17 @@ Or from a shell:
 claude plugin install lewell-theme --marketplace kimthangk/claude-theme-lewell
 ```
 
-Answer `y` to add the marketplace, then pick the **user** scope so every session
-gets it. The backdrop still only shows in the desktop app.
+Then start a new session in the desktop app and send your first message. The
+backdrop appears as soon as the session starts, and the companion walks while
+Claude replies.
 
-</details>
+- A new session's start screen stays plain until you send that first message,
+  because the theme runs inside the session.
+- Sessions that were already open keep the old look until you start a new one.
 
 ## Pick a scene
 
-Type `/scene` followed by a scene name in the desktop app, for example:
+Type `/scene` followed by a scene name, for example:
 
 ```
 /scene lewell-tokyo
@@ -72,31 +67,33 @@ Type `/scene` alone to list them all. Your pick is remembered for new sessions.
 </tr>
 </table>
 
-The pictures show Lewy standing. While Claude works he walks, the street scrolls
-and the landmarks drift slowly behind him.
+The pictures show the companion standing. While Claude works it walks, the street
+scrolls and the landmarks drift slowly behind it.
 
 ## What it does on your computer
 
 - **Reads:** only when a turn starts and ends, and whether a tool call is
-  `AskUserQuestion` or `ExitPlanMode` (so Lewy stops while Claude waits for you).
-  It never reads your messages, files or tool results.
+  `AskUserQuestion` or `ExitPlanMode` (so the companion stops while Claude waits for
+  you). It never reads your messages, files or tool results.
 - **Calls:** `$.theme.set` to show the backdrop, `$.clock` to time the city changes,
   and `$.command.register` to add `/scene`.
-- **Stores:** your chosen scene and how far Lewy has walked, in Claude Code's own
-  plugin storage on your computer.
+- **Stores:** your chosen scene and how far the companion has walked, in Claude
+  Code's own plugin storage on your computer.
 - **Sends:** nothing. No network requests, no analytics, no files written.
+- **Costs:** a few percent of one CPU core while it animates, and about 1 MB of memory.
 
-## Turn it off
+## Update or turn it off
 
-In the desktop app, open **+**, then **Plugins**, and turn off or remove
-**lewell-theme**. From a shell:
+From a shell:
 
 ```bash
+claude plugin update lewell-theme
 claude plugin disable lewell-theme
 claude plugin uninstall lewell-theme
 ```
 
-Your usual backdrop comes back in the next session.
+Changes apply to sessions you start afterwards. Your usual backdrop comes back once
+the theme is off.
 
 ## For builders: how it works
 
@@ -113,11 +110,16 @@ What we learned getting animation to play in the desktop backdrop:
   the theme again under a flipped name (`scene_a` / `scene_b`).
 - Scrolling layers are drawn once and copied with `<use>`, then moved with a linear
   CSS animation. Walk poses are stacked and switched with stepped animations.
+- The app pauses animations while you resize the window or while it redraws the chat.
+  Give one walk pose a visible default, so a pause freezes the character instead of
+  hiding it.
+- Write state only when it changes. Writing the same walk state on every tool call
+  made the walk stall.
 
 ## License
 
 The code is MIT licensed, see [LICENSE](LICENSE).
 
-Lewy, the LeWell name and the LeWell logo are trademarks of LEWELL COMPANY LIMITED.
-They're included so the theme works as made. Please don't use them to brand your own
-apps or products.
+The companion character, the LeWell name and the LeWell logo are trademarks of
+LEWELL COMPANY LIMITED. They're included so the theme works as made. Please don't use
+them to brand your own apps or products.
