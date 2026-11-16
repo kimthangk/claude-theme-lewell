@@ -44,6 +44,9 @@ Type `/scene` followed by a scene name, for example:
 
 Type `/scene` alone to list them all. Your pick is remembered for new sessions.
 
+To hide the backdrop without uninstalling, type `/scene off`. `/scene on` brings
+back the scene you had. Both are remembered for new sessions too.
+
 <table>
 <tr>
 <td width="50%"><img src="images/christmas.jpg" alt="Christmas night"><br><b>Christmas night</b> (default): a snowy village with Christmas lights<br><code>/scene lewell-xmas-night</code></td>

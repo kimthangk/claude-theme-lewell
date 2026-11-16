@@ -8,7 +8,8 @@ import { lewellXmasNightScene } from './lewell-xmas-night'
 
 // LeWell backdrops for the Claude desktop app: Lewy walks while Claude works and
 // stands (and blinks) when it waits for you. Scenes: a Christmas night village, a
-// city tour, and each city alone; /scene switches between them.
+// city tour, and each city alone; /scene switches between them, /scene off
+// hides the backdrop and /scene on brings it back.
 //
 // What the desktop backdrop needs, learned 15-16 Nov:
 // - only code-drawn SVG shows (no pictures); one flat <svg>, <style> first
@@ -52,8 +53,11 @@ const lewy = atom({ plugin: 'lewell-theme', key: 'lewy' } as const, { isWalking:
 let isTurnActive = false
 let currentScene: SceneId = 'lewell-xmas-night'
 let sceneFlip = false
+// /scene off: no backdrop, here and in new sessions, until /scene on or a scene pick
+let isOff = false
 
 async function redraw($: EngineInterface): Promise<void> {
+  if (isOff) return
   sceneFlip = !sceneFlip
   await $.theme.set({ backdrop: { scene: `${currentScene}_${sceneFlip ? 'a' : 'b'}`, glass: GLASS } }).catch(() => undefined)
 }
@@ -83,7 +87,7 @@ async function scheduleStep($: EngineInterface): Promise<void> {
   stepTimer?.cancel(); stepTimer = null
   const stepS = LOOKS[currentScene].stepS
   const c = await read($, lewy)
-  if (!stepS || !c.isWalking) return
+  if (isOff || !stepS || !c.isWalking) return
   const ms = c.offsetMs + Math.max(0, (await $.clock.now()) - c.sinceMs)
   const wait = stepS * 1000 - (ms % (stepS * 1000)) + 40
   stepTimer = $.clock.after(wait, () => { void redraw($).then(() => scheduleStep($)) })
@@ -104,19 +108,40 @@ async function apply($: EngineInterface, id: SceneId): Promise<void> {
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'scene', description: `Switch the backdrop: /scene ${SCENES.join(', ')}` })
+    await $.command.register({ name: 'scene', description: `Switch the backdrop: /scene ${SCENES.join(', ')}, or /scene off and /scene on` })
     // 16 Nov: the tour was renamed from lewell-cities to lewell-city-tour
     if ((await $.store.get('scene')) === 'lewell-cities') await $.store.set('scene', 'lewell-city-tour')
     const saved = await $.store.get('scene')
-    await apply($, isScene(saved) ? saved : 'lewell-xmas-night')
+    isOff = (await $.store.get('off')) === true
+    // off: remember the scene but set no theme, so the app keeps its own look
+    if (isOff) currentScene = isScene(saved) ? saved : 'lewell-xmas-night'
+    else await apply($, isScene(saved) ? saved : 'lewell-xmas-night')
     return next(e)
   })
 
   on('command.run', { command: 'scene' }, async ($, e) => {
     const id = e.args.trim().toLowerCase()
-    if (!isScene(id)) return { text: `Scenes: ${SCENES.join(', ')}` }
+    if (id === 'off') {
+      isOff = true
+      stepTimer?.cancel(); stepTimer = null
+      await $.store.set('off', true)
+      // the person asked: back to the app's own look
+      await $.theme.clear().catch(() => undefined)
+      return { text: 'Backdrop off. /scene on brings it back' }
+    }
+    if (id === 'on') {
+      isOff = false
+      await $.store.set('off', false)
+      await apply($, currentScene)
+      await scheduleStep($)
+      return { text: `Backdrop: ${currentScene}` }
+    }
+    if (!isScene(id)) return { text: `Scenes: ${SCENES.join(', ')}, or off / on` }
+    isOff = false
+    await $.store.set('off', false)
     await $.store.set('scene', id)
     await apply($, id)
+    await scheduleStep($)
     return { text: `Backdrop: ${id}` }
   })
 
