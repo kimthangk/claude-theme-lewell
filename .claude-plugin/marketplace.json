@@ -1,0 +1,13 @@
+{
+  "name": "lewell-claude-theme",
+  "owner": {
+    "name": "LeWell"
+  },
+  "plugins": [
+    {
+      "name": "lewell-theme",
+      "source": "./"
+    }
+  ],
+  "description": "Animated pixel-art backdrops for the Claude desktop app, starring Lewy from LeWell"
+}
