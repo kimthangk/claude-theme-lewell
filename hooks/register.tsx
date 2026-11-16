@@ -59,6 +59,9 @@ async function redraw($: EngineInterface): Promise<void> {
 }
 
 async function walk($: EngineInterface, isWalking: boolean): Promise<void> {
+  // already in that state (every tool call asks again): touch nothing, so the
+  // backdrop is not re-checked mid-walk
+  if ((await read($, lewy)).isWalking === isWalking) return
   const now = await $.clock.now()
   let changed = false
   await update($, lewy, (c: LewyClock): LewyClock => {
