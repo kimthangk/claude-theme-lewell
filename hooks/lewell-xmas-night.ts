@@ -44,10 +44,18 @@ const BULBS = ['#ff4a4a', '#ffd25a', '#5fd38a', '#6ab0ff']
 let bulbs: string[] = ['', '', '', '']
 function bulb(x: number, y: number, i: number): void { bulbs[i % 4] += `M${snap(x)} ${snap(y)}h${P}v${P}h-${P}z` }
 function takeLights(): string {
-  const out = bulbs.map((d, i) => d ? `<path class="li li${i % 2}" d="${d}" fill="${BULBS[i]}"/>` : '').join('')
+  // two groups (one per twinkle phase), so a layer runs 2 animations, not one per colour
+  const phase = (k: number) => bulbs.map((d, i) => d && i % 2 === k ? `<path d="${d}" fill="${BULBS[i]}"/>` : '').join('')
+  const out = `<g class="li0">${phase(0)}</g><g class="li1">${phase(1)}</g>`
   bulbs = ['', '', '', '']
   return out
 }
+
+// Warm glows (windows, lamps, the tree): gathered while a layer is built and drawn as
+// one pulsing group, so the whole layer's glow is a single animation.
+let glows = ''
+function glow(cx: number, cy: number, r: number): string { glows += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#warm)"/>`; return '' }
+function takeGlows(): string { const out = glows ? `<g class="gl">${glows}</g>` : ''; glows = ''; return out }
 
 /** A fir of stacked tiers: the needles as one stepped shape, the snow on each tier as another. */
 function fir(x: number, foot: number, h: number, body: string, snow: string, tiers = 4, lit = false): string {
@@ -84,7 +92,7 @@ function christmasTree(x: number, foot: number, h: number): string {
   out += `<path d="${red}" fill="#d8323a"/><path d="${gold}" fill="#f2c14e"/>`
   // the star on top, glowing
   const sy = snap(foot - h) - P * 2
-  out += `<circle cx="${snap(x)}" cy="${sy}" r="40" fill="url(#warm)" class="gl"/>`
+  out += glow(snap(x), sy, 40)
   out += `<path d="M${snap(x) - P} ${sy - P * 3}h${P * 2}v${P * 2}h${P * 2}v${P * 2}h-${P * 2}v${P * 2}h-${P * 2}v-${P * 2}h-${P * 2}v-${P * 2}h${P * 2}z" fill="#ffd94a" class="st"/>`
   return out
 }
@@ -101,7 +109,7 @@ function house(x: number, foot: number, s: number, wall: string): string {
   }
   out += outline(rows, 'url(#roof)')
   // glowing windows and a door
-  out += `<circle cx="${x}" cy="${top + h * 0.45}" r="${48 * s}" fill="url(#warm)" class="gl"/>`
+  out += glow(x, top + h * 0.45, 48 * s)
   out += `<rect x="${snap(left + w * 0.16)}" y="${snap(top + h * 0.28)}" width="${snap(12 * s) || P}" height="${snap(12 * s) || P}" fill="#ffcf72"/>`
   out += `<rect x="${snap(left + w * 0.62)}" y="${snap(top + h * 0.28)}" width="${snap(12 * s) || P}" height="${snap(12 * s) || P}" fill="#ffc35e"/>`
   out += `<rect x="${snap(x - 6 * s)}" y="${snap(foot - 20 * s)}" width="${snap(12 * s) || P}" height="${snap(20 * s)}" fill="#b8282f"/>`
@@ -114,7 +122,7 @@ function lamp(x: number, foot: number): string {
   let stripes = ''
   for (let y = snap(foot - 66); y < foot; y += P * 2) stripes += `M${snap(x)} ${y}h${P}v${P}h-${P}z`
   return `<rect x="${snap(x)}" y="${snap(foot - 66)}" width="${P}" height="66" fill="#f4f1ec"/><path d="${stripes}" fill="#d8323a"/>` +
-    `<circle cx="${snap(x) + 3}" cy="${snap(foot - 72)}" r="34" fill="url(#warm)" class="gl"/>` +
+    glow(snap(x) + 3, snap(foot - 72), 34) +
     `<rect x="${snap(x) - P}" y="${snap(foot - 78)}" width="${P * 3}" height="${P * 2}" fill="#ffd77e"/>` +
     `<rect x="${snap(x) - P}" y="${snap(foot - 84)}" width="${P * 3}" height="${P}" fill="#3a3f52"/>`
 }
@@ -132,11 +140,11 @@ const MID = stepHill(midF, H, 'url(#snowMid)') +
   christmasTree(1110, midF(1110) + P * 2, 210) +
   signpost(300, midF(300) + 10, 30, true, true) +
   house(420, midF(420) + 8, 1.1, '#2c3f4a') + house(900, midF(900) + 8, 0.8, '#34405a') + house(1320, midF(1320) + 8, 1, '#303a52') +
-  [520, 1000].map(x => lamp(x, midF(x) + 8)).join('') + takeLights()
+  [520, 1000].map(x => lamp(x, midF(x) + 8)).join('') + takeGlows() + takeLights()
 const NEAR = stepHill(nearF, H, 'url(#snowNear)') +
   `<path d="M0 ${PATH_Y - 18}${Array.from({ length: W / P }, (_, i) => `H${(i + 1) * P}V${snap(PATH_Y - 18 + Math.sin((TAU * 2 * i * P) / W) * 8)}`).join('')}V${PATH_Y + 26}H0Z" fill="url(#path)"/>` +
   [80, 560, 1040, 1460].map((x, i) => disc(x, nearF(x) + 16, 26 + (i % 2) * 10, 'url(#mound)', 1.6)).join('') +
-  [300, 760, 1240].map((x, i) => fir(x, nearF(x) + 18, 70, 'url(#fir)', 'url(#snowCap)', 3, i !== 1)).join('') + takeLights()
+  [300, 760, 1240].map((x, i) => fir(x, nearF(x) + 18, 70, 'url(#fir)', 'url(#snowCap)', 3, i !== 1)).join('') + takeGlows() + takeLights()
 
 // ---- still pieces: sky, framing branches, falling snow ----
 const branch = (x0: number, y0: number, dir: number, len: number) => {
@@ -155,15 +163,24 @@ const branch = (x0: number, y0: number, dir: number, len: number) => {
 }
 const FRAME = branch(200, 240, 1, 18) + branch(250, 300, 1, 10) + branch(1400, 250, -1, 20) + branch(1380, 320, -1, 11)
 
-const snowfall = (() => {
-  const out: string[] = []
-  for (let i = 0; i < 48; i++) {
-    const depth = rand(), s = depth > 0.7 ? P : P / 2
-    const x = snap(200 + rand() * 1200), dur = 18 - depth * 9
-    out.push(`<rect x="${x}" y="200" width="${s}" height="${s}" fill="#dfe6f6" opacity="${(0.45 + depth * 0.45).toFixed(2)}" style="animation:fall ${dur.toFixed(1)}s linear -${(rand() * dur).toFixed(1)}s infinite"/>`)
+// Falling snow as three sheets (far, middle, near), each one path moved by one
+// animation, instead of 48 flakes animated one by one. Each sheet holds its flakes
+// twice, one fall apart, so the loop joins without a seam.
+const FALL = { dx: 40, dy: 720 }
+const SNOW_SHEETS = [
+  { n: 20, size: P / 2, opacity: 0.55, dur: 17 },
+  { n: 16, size: P / 2, opacity: 0.72, dur: 13 },
+  { n: 12, size: P, opacity: 0.88, dur: 9.5 },
+]
+const snowSheets = SNOW_SHEETS.map(({ n, size, opacity }) => {
+  let d = ''
+  for (let i = 0; i < n; i++) {
+    rand()   // the old per-flake speed pick, kept so the stars drawn after the snow stay where they were
+    const x = snap(200 + rand() * 1200), y = snap(200 + rand() * FALL.dy)
+    for (const k of [0, 1]) d += `M${x - k * FALL.dx} ${y - k * FALL.dy}h${size}v${size}h-${size}z`
   }
-  return out.join('')
-})()
+  return { d, opacity }
+})
 
 // ---- Lewy ----
 const LEWY_PX = 6.8
@@ -187,23 +204,29 @@ const STARS = (() => {
 })()
 
 const SCROLL = { far: 300, mid: 150, near: 70 }
+// Moving parts step at FPS frames a second instead of gliding at the screen's rate:
+// it suits the pixel look and lets the app redraw far less often, so the walk keeps
+// going when the app is busy (founder, 18 Nov: the scene froze under load)
+const FPS = 12
+const steps = (durS: number) => `steps(${Math.max(1, Math.round(durS * FPS))})`
 const ZOOM = { x: 200, y: 225, w: 1200, h: 675 }
 
 export function lewellXmasNightScene(walking: boolean, walkedMs: number): string {
   const t = walkedMs / 1000
   const layer = (id: keyof typeof SCROLL, body: string) => {
     const dur = SCROLL[id], off = -((t / dur) * W) % W
-    const anim = walking ? ` style="animation:scroll ${dur}s linear -${Math.round((t % dur) * 10) / 10}s infinite"` : ` transform="translate(${Math.round(off)} 0)"`
+    const anim = walking ? ` style="animation:scroll ${dur}s ${steps(dur)} -${Math.round((t % dur) * 10) / 10}s infinite"` : ` transform="translate(${Math.round(off)} 0)"`
     return `<g${anim}><g id="${id}">${body}</g><use href="#${id}" x="${W}"/></g>`
   }
   const style = `
 .px path{fill:none;stroke-width:1.04}
-.gl{animation:gl 4s ease-in-out infinite alternate}
+.gl{animation:gl 4s ${steps(4)} infinite alternate}
 .li0{animation:li 1.6s steps(1) infinite}.li1{animation:li 1.6s steps(1) -.8s infinite}
-.st{animation:gl 2s ease-in-out infinite alternate}
+.st{animation:gl 2s ${steps(2)} infinite alternate}
+${SNOW_SHEETS.map(({ dur }, i) => `.sn${i}{animation:fall ${dur}s ${steps(dur)} -${(i * 3.1).toFixed(1)}s infinite}`).join('')}
 .blink{visibility:hidden;animation:blink 4.2s step-end infinite}
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-${W}px)}}
-@keyframes fall{from{transform:translate(0,0)}to{transform:translate(40px,720px)}}
+@keyframes fall{from{transform:translate(0,0)}to{transform:translate(${FALL.dx}px,${FALL.dy}px)}}
 @keyframes gl{from{opacity:.7}to{opacity:1}}
 @keyframes li{0%{opacity:1}50%{opacity:.35}}
 ${walkPosesCss(NL_WALK.length, STEP_S)}
@@ -228,6 +251,6 @@ ${walkPosesCss(NL_WALK.length, STEP_S)}
 <rect x="0" y="0" width="${W}" height="${H}" fill="url(#sky)"/>${STARS}<circle cx="560" cy="330" r="120" fill="url(#halo)"/>${disc(560, 330, 34, '#ece8d4')}${disc(572, 340, 7, '#d9d4bc')}
 ${layer('far', FAR)}${layer('mid', MID)}${layer('near', NEAR)}
 ${lewy(walking)}
-${snowfall}${FRAME}
+${snowSheets.map(({ d, opacity }, i) => `<path class="sn${i}" d="${d}" fill="#dfe6f6" opacity="${opacity}"/>`).join('')}${FRAME}
 </svg>`
 }

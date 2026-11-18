@@ -432,6 +432,11 @@ function lewy(walking: boolean): string {
 }
 
 const STREET_S = 80
+// Moving parts step at FPS frames a second instead of gliding at the screen's rate:
+// it suits the pixel look and lets the app redraw far less often (founder, 18 Nov:
+// the scenes froze while the app was busy). Same as the Christmas night.
+const FPS = 12
+const steps = (durS: number) => `steps(${Math.max(1, Math.round(durS * FPS))})`
 const ZOOM = { x: 200, y: 225, w: 1200, h: 675 }
 
 const DRIFT = 180
@@ -460,7 +465,7 @@ function drawCity(walking: boolean, walkedMs: number, only: number | null): stri
   const t = walkedMs / 1000
   const c = (only === null ? CITIES[Math.floor(t / CITY_S) % CITIES.length] : CITIES[only]) ?? CITIES[0]!
   const off = -((t / STREET_S) * W) % W
-  const anim = walking ? ` style="animation:scroll ${STREET_S}s linear -${f1(t % STREET_S)}s infinite"` : ` transform="translate(${Math.round(off)} 0)"`
+  const anim = walking ? ` style="animation:scroll ${STREET_S}s ${steps(STREET_S)} -${f1(t % STREET_S)}s infinite"` : ` transform="translate(${Math.round(off)} 0)"`
   const street = `<g${anim}><g id="street">${streetFor(c.sign)}</g><use href="#street" x="${W}"/></g>`
   // the landmarks drift slowly left behind the street (parallax), DRIFT px each way over one city
   const inCity = t % CITY_S
@@ -468,10 +473,10 @@ function drawCity(walking: boolean, walkedMs: number, only: number | null): stri
   const inPan = t % (2 * PAN_S), panAt = inPan < PAN_S ? DRIFT - (inPan / PAN_S) * 2 * DRIFT : -DRIFT + ((inPan - PAN_S) / PAN_S) * 2 * DRIFT
   const landmarks = only === null
     ? (walking
-      ? `<g style="animation:drift ${CITY_S}s linear -${f1(inCity)}s 1 forwards">${c.scene}</g>`
+      ? `<g style="animation:drift ${CITY_S}s ${steps(CITY_S)} -${f1(inCity)}s 1 forwards">${c.scene}</g>`
       : `<g transform="translate(${Math.round(driftAt)} 0)">${c.scene}</g>`)
     : (walking
-      ? `<g style="animation:drift ${PAN_S}s linear -${f1(inPan)}s infinite alternate">${c.scene}</g>`
+      ? `<g style="animation:drift ${PAN_S}s ${steps(PAN_S)} -${f1(inPan)}s infinite alternate">${c.scene}</g>`
       : `<g transform="translate(${Math.round(panAt)} 0)">${c.scene}</g>`)
   reseed(7)
   // stars in three groups, each twinkling on its own beat, so they never blink together
@@ -479,7 +484,7 @@ function drawCity(walking: boolean, walkedMs: number, only: number | null): stri
   for (let i = 0; i < 34; i++) sd[i % 3] += `M${snap(220 + rand() * 1160)} ${snap(236 + rand() * 200)}h${P}v${P}h-${P}z`
   const style = `
 .px path{fill:none;stroke-width:1.04}
-.st0{animation:tw 3.1s ease-in-out infinite}.st1{animation:tw 4.3s ease-in-out -1.7s infinite}.st2{animation:tw 5.9s ease-in-out -3.2s infinite}
+.st0{animation:tw 3.1s ${steps(3.1)} infinite}.st1{animation:tw 4.3s ${steps(4.3)} -1.7s infinite}.st2{animation:tw 5.9s ${steps(5.9)} -3.2s infinite}
 @keyframes tw{0%,100%{opacity:.8}50%{opacity:.15}}
 .blink{visibility:hidden;animation:blink 4.2s step-end infinite}
 @keyframes drift{from{transform:translateX(${DRIFT}px)}to{transform:translateX(-${DRIFT}px)}}
